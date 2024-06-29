@@ -1,0 +1,121 @@
+public class StrategyTest {
+ 
+    public static void main(String[] args) {
+        Zombie zombie = new NormalZombie(new OneStepMove(),new OneAttack());
+        zombie.display();
+        zombie.move();
+        zombie.attack();
+        //根据传入的值，改变对应的方法调用输出的结果
+        zombie.setMoveable(new TenStepMove());
+        zombie.setAttackable(new TenAttack());
+        System.out.println("......进过策略模式传递对象改变后，调用同样的方法输出结果......");
+        zombie.move();
+        zombie.attack();
+    }
+}
+ 
+//移动的接口
+interface Moveable{
+    void move();
+}
+//攻击的接口
+interface Attackable{
+    void attack();
+}
+ 
+//定义一个抽象类
+abstract class Zombie {
+    abstract void display();
+    Moveable moveable;
+    Attackable attackable;
+    abstract void move();
+    abstract void attack();
+ 
+    public Zombie(Moveable moveable, Attackable attackable) {
+        this.moveable = moveable;
+        this.attackable = attackable;
+    }
+ 
+    public void setMoveable(Moveable moveable) {
+        this.moveable = moveable;
+    }
+ 
+    public void setAttackable(Attackable attackable) {
+        this.attackable = attackable;
+    }
+}
+ 
+//子类继承抽象类
+class NormalZombie extends Zombie{
+ 
+    public NormalZombie(Moveable moveable, Attackable attackable) {
+        super(moveable, attackable);
+    }
+ 
+    @Override
+    void display() {
+        System.out.println("普通类");
+    }
+ 
+    @Override
+    void move() {
+        moveable.move();
+    }
+ 
+    @Override
+    void attack() {
+        attackable.attack();
+    }
+}
+ 
+//子类继承抽象类
+class StyleZombie extends Zombie{
+ 
+    public StyleZombie(Moveable moveable, Attackable attackable) {
+        super(moveable, attackable);
+    }
+ 
+    @Override
+    void display() {
+        System.out.println("风格类......");
+    }
+ 
+    @Override
+    void move() {
+        moveable.move();
+    }
+ 
+    @Override
+    void attack() {
+        attackable.attack();
+    }
+}
+ 
+//定义类实现具体的移动方法
+class OneStepMove implements Moveable{
+    @Override
+    public void move() {
+        System.out.println("走一步");
+    }
+}
+ 
+class TenStepMove implements Moveable{
+    @Override
+    public void move() {
+        System.out.println("走十步");
+    }
+}
+ 
+class OneAttack implements Attackable{
+    @Override
+    public void attack() {
+        System.out.println("一次攻击");
+    }
+}
+ 
+class TenAttack implements Attackable{
+    @Override
+    public void attack() {
+        System.out.println("十次攻击");
+    }
+}
