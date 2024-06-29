@@ -1,0 +1,56 @@
+public class ObserverTest {
+    public static void main(String[] args) {
+        Subject subject = new Subject();
+        Observer subClass1 = new SubClass1();
+        Observer subClass2 = new SubClass2();
+        //把观察者对象添加进依赖的对象里面
+        subject.add(subClass1);
+        subject.add(subClass2);
+        subject.notityAll("数据有更新了...");
+        System.out.println("...移出某个需要通知的对象后...");
+        subject.remove(subClass1);
+        subject.notityAll("数据再次更新了...");
+    }
+}
+ 
+class Subject {
+    List<Observer> list = new ArrayList<Observer>();
+ 
+    //添加需要通知的对象
+    public void add(Observer observer){
+        if(!list.contains(observer)){
+            list.add(observer);
+        }
+    }
+ 
+    //移出需要通知的对象
+    public void remove(Observer observer){
+        list.remove(observer);
+    }
+ 
+    //有变动，通知所有的监听对象
+    public void notityAll(Object object){
+        for(int i = 0;i < list.size();i++){
+            Observer observer = list.get(i);
+            observer.notity(object);
+        }
+    }
+}
+ 
+interface Observer{
+    void notity(Object object);
+}
+ 
+class SubClass1 implements Observer{
+    @Override
+    public void notity(Object object) {
+        System.out.println("通知消息1："+object);
+    }
+}
+ 
+class SubClass2 implements Observer{
+    @Override
+    public void notity(Object object) {
+        System.out.println("通知消息2："+object);
+    }
+}
