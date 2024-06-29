@@ -1,0 +1,119 @@
+public class IteratorTest {
+ 
+    public static void main(String[] args) {
+        //创建聚合类
+        Aggegate concreteAggegate = new ConcreteAggegate();
+        //向聚合类中添加对象
+        concreteAggegate.add("苹果");
+        concreteAggegate.add("橘子");
+        concreteAggegate.add("香蕉");
+        concreteAggegate.add("芒果");
+        //把聚合类中的集合对象作为参数传递到迭代器中，创建迭代器
+        Iterator iterator = concreteAggegate.getIterator();
+        //遍历数据
+        while(iterator.hasNext()){
+            System.out.println(iterator.next());
+        }
+        System.out.println("遍历结束");
+        System.out.println(iterator.first());
+        System.out.println(iterator.hasNext());
+        System.out.println(iterator.next());
+        System.out.println(iterator.previous());
+        System.out.println(iterator.last());
+        System.out.println(iterator.hasNext());
+    }
+}
+ 
+//聚合抽象类
+interface Aggegate{
+    //添加元素到集合中
+    void add(Object object);
+    //从集合中移出元素
+    void remove(Object object);
+    //获得迭代器
+    Iterator getIterator();
+}
+ 
+//抽象迭代器类
+interface Iterator{
+    //获取第一个元素
+    Object first();
+    //获取下一个元素
+    Object next();
+    //获取前一个元素
+    Object previous();
+    //获取最后一个元素
+    Object last();
+    //是否还有下一个元素
+    boolean hasNext();
+}
+ 
+//具体聚合类
+class ConcreteAggegate implements Aggegate{
+    //定义一个集合，用于存放加入到聚合类中的对象
+    private List<Object> list = new ArrayList<Object>();
+ 
+    @Override
+    public void add(Object object) {
+        list.add(object);
+    }
+ 
+    @Override
+    public void remove(Object object) {
+        list.remove(object);
+    }
+ 
+    @Override
+    public Iterator getIterator() {
+        return new ConcreteIterator(list);
+    }
+}
+ 
+//具体迭代器
+class ConcreteIterator implements Iterator{
+    //定义一个集合，用于接收聚合类中的集合对象
+    private List<Object> list = new ArrayList<Object>();
+    //迭代器的索引
+    int index = -1;
+ 
+    public ConcreteIterator(List<Object> list) {
+        this.list = list;
+    }
+ 
+    @Override
+    public Object first() {
+        index = 0;
+        return list.get(index);
+    }
+ 
+    @Override
+    public Object next() {
+        if(this.hasNext()){
+            return list.get(++index);
+        }
+        return null;
+    }
+ 
+    @Override
+    public Object previous() {
+        if(index > 0) {
+            return list.get(--index);
+        }else {
+            return null;
+        }
+    }
+ 
+    @Override
+    public Object last() {
+        index = list.size()-1;
+        return list.get(index);
+    }
+ 
+    @Override
+    public boolean hasNext() {
+        if(index >= list.size()-1){
+            return false;
+        }
+        return true;
+    }
+}
