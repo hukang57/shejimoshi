@@ -1,0 +1,87 @@
+public class InterpreterTest {
+    public static void main(String[] args) {
+        Context context = new Context();
+        context.checkMes("军人的子女");
+        context.checkMes("军人的妻子");
+        context.checkMes("工人的子女");
+        context.checkMes("警察的父母");
+        context.checkMes("警察的朋友");
+    }
+}
+ 
+//抽象表达式
+interface AbstractExpression{
+    //接收某个输入的信息
+    boolean interprete(String info);
+}
+ 
+//终结者表达式-名词、代词
+class TerminalExpression implements AbstractExpression{
+ 
+    //定义集合存放允许的词
+    private List<String> list = new ArrayList<String>();
+ 
+    //创建对象时，需要给出允许的词
+    public TerminalExpression(String[] arrStr) {
+        for(int i = 0;i < arrStr.length;i++){
+            list.add(arrStr[i]);
+        }
+    }
+ 
+    @Override
+    public boolean interprete(String info) {
+        //包含这个此，返回true
+        if(list.contains(info)){
+            return true;
+        }
+        return false;
+    }
+}
+ 
+//非终结者表达式-谓语（动词）
+class NonTerminalExpression implements AbstractExpression{
+    //记录终结者表达式的对象
+    private AbstractExpression jobExpression;
+    private AbstractExpression persionExpression;
+ 
+    public NonTerminalExpression(AbstractExpression jobExpression, AbstractExpression persionExpression) {
+        this.jobExpression = jobExpression;
+        this.persionExpression = persionExpression;
+    }
+ 
+    @Override
+    public boolean interprete(String info) {
+        //非终结者进行分词
+        String[]  arr = info.split("的");
+        //判断是否包含
+        return jobExpression.interprete(arr[0]) && persionExpression.interprete(arr[1]);
+    }
+}
+ 
+//环境角色
+class Context{
+    //定义允许的此
+    String[] jobArr = {"军人","警察"};
+    String[] persionArr = {"父母","子女"};
+ 
+    //定义一个非终结表达式对象
+    AbstractExpression nonTerminalExpression;
+ 
+    public Context() {
+        //创建终结者表达式对象
+        TerminalExpression job = new TerminalExpression(jobArr);
+        TerminalExpression persion = new TerminalExpression(persionArr);
+        nonTerminalExpression = new NonTerminalExpression(job, persion);
+    }
+ 
+    //输入一个字符判断是否符合表达式
+    public void checkMes(String info){
+        boolean interprete = nonTerminalExpression.interprete(info);
+        if(interprete){
+            System.out.println(info+"可以享受优先的政策");
+        } else {
+            System.out.println(info+"正常排队");
+        }
+    }
+}
+ 
