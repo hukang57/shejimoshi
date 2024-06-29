@@ -1,0 +1,167 @@
+public class StateTest {
+    public static void main(String[] args) {
+        ThreadContext threadContext = new ThreadContext();
+        //启动线程，方法执行前状态：新建，执行后状态：变为就绪
+        threadContext.start();
+        //获取到cpu资源，方法执行前状态：就绪，执行后状态：变为运行
+        threadContext.getCpu();
+        //中断线程，方法执行前状态：运行，执行后状态：变为阻塞
+        threadContext.suspend();
+        //恢复线程，方法执行前状态：阻塞，执行后状态：变为就绪
+        threadContext.resume();
+        //获取到cpu资源，方法执行前状态：就绪，执行后状态：变为运行
+        threadContext.getCpu();
+        //停止线程 ，方法执行前状态：运行，执行后状态：变为停止
+        threadContext.stop();
+    }
+}
+ 
+//环境类-存放全局的状态
+class ThreadContext{
+    //环境类里面放一个记录状态的类，通过该变此对象的值，来改变环境的状态
+    ThreadState state;
+ 
+    //创建环境类的时候，先默认给一个初始的state状态
+    public ThreadContext() {
+        state = new New();
+    }
+ 
+    //程序运行过程中获取状态
+    public ThreadState getState() {
+        return state;
+    }
+ 
+    //程序运行过程中，重新设置状态值
+    public void setState(ThreadState state) {
+        this.state = state;
+    }
+ 
+    //调用启动方法-状态为新建的时候
+    public void start(){
+        //把state抽象类强转成具体的子类，调用子类的方法，并把环境类传递过去，这样可以在此方法调用后改变state状态值
+        ((New)state).start(this);
+    }
+ 
+    //调用获取cpu资源-状态为就绪的时候
+    public void getCpu(){
+        //把state抽象类强转成具体的子类，调用子类的方法，并把环境类传递过去，这样可以在此方法调用后改变state状态值
+        ((Runnable)state).getCpu(this);
+    }
+ 
+    //调用线程中断-状态为运行的时候
+    public void suspend(){
+        //把state抽象类强转成具体的子类，调用子类的方法，并把环境类传递过去，这样可以在此方法调用后改变state状态值
+        ((Running)state).suspend(this);
+    }
+ 
+    //调用线程结束-状态为运行的时候
+    public void stop(){
+        //把state抽象类强转成具体的子类，调用子类的方法，并把环境类传递过去，这样可以在此方法调用后改变state状态值
+        ((Running)state).stop(this);
+    }
+ 
+    //调用线程结束-状态为阻塞的时候
+    public void resume(){
+        //把state抽象类强转成具体的子类，调用子类的方法，并把环境类传递过去，这样可以在此方法调用后改变state状态值
+        ((Blocked)state).resume(this);
+    }
+}
+ 
+//抽象状态类
+abstract class ThreadState{
+    String stateName;
+}
+ 
+//具体状态类-线程新建状态，可以调用启动方法
+class New extends ThreadState{
+    public New(){
+        stateName = "新建状态";
+        System.out.println("线程创建.");
+    }
+ 
+    public void start(ThreadContext threadContext){
+        System.out.println("调用线程启动方法start()");
+        if("新建状态".equals(stateName)){
+            //重新设置环境类中state状态变量的值
+            threadContext.setState(new Runnable());
+        } else {
+            System.out.println("线程没有处于新建状态，不允许启动线程");
+        }
+    }
+}
+ 
+//具体实现类-线程就绪状态，可以调用获取cpu资源的方法
+class Runnable extends ThreadState{
+ 
+    public Runnable() {
+        stateName = "就绪状态";
+        System.out.println("线程处于就绪状态");
+    }
+ 
+    public void getCpu(ThreadContext threadContext){
+        System.out.println("调用线程获取资源方法getCpu()");
+        if("就绪状态".equals(stateName)){
+            //重新设置环境类中state状态变量的值
+            threadContext.setState(new Running());
+        } else {
+            System.out.println("线程没有处于就绪状态，不允许获取资源");
+        }
+    }
+}
+ 
+//具体实现类-线程运行状态，可以调用中断、结束线程的方法
+class Running extends ThreadState{
+ 
+    public Running() {
+        stateName = "运行状态";
+        System.out.println("线程处于运行状态");
+    }
+ 
+    public void suspend(ThreadContext threadContext){
+        System.out.println("调用线程中断方法suspend()");
+        if("运行状态".equals(stateName)){
+            //重新设置环境类中state状态变量的值
+            threadContext.setState(new Blocked());
+        } else {
+            System.out.println("线程没有处于运行状态，不允许中断");
+        }
+    }
+ 
+    public void stop(ThreadContext threadContext){
+        System.out.println("调用线程结束方法stop()");
+        if("运行状态".equals(stateName)){
+            //重新设置环境类中state状态变量的值
+            threadContext.setState(new Stop());
+        } else {
+            System.out.println("线程没有处于运行状态，不允许结束");
+        }
+    }
+}
+ 
+//具体实现类-线程阻塞状态，可以调用恢复线程的方法
+class Blocked extends ThreadState{
+ 
+    public Blocked() {
+        stateName = "阻塞状态";
+        System.out.println("线程处于阻塞状态");
+    }
+ 
+    public void resume(ThreadContext threadContext){
+        System.out.println("调用线程恢复方法resume()");
+        if("阻塞状态".equals(stateName)){
+            //重新设置环境类中state状态变量的值
+            threadContext.setState(new Runnable());
+        } else {
+            System.out.println("线程没有处于阻塞状态，不允许恢复");
+        }
+    }
+}
+ 
+//具体实现类-线程结束状态
+class Stop extends ThreadState{
+ 
+    public Stop() {
+        stateName = "结束状态";
+        System.out.println("线程处于结束状态");
+    }
+}
