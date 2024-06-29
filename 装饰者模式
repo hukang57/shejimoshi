@@ -1,0 +1,59 @@
+public class DecoratorTest {
+    public static void main(String[] args) {
+        //这是一开始既有的实现
+        /*Component component = new CreateComponent();
+        component.operation();*/
+        //使用接口接收创建的类；创建具体类的实现作为它实现的接口，此接口是一个参数，即可在不改变原有对象的基础上，扩展附加一些属性
+        Component component = new CreateDecorator2(new CreateDecoator1(new CreateComponent()));
+        component.operation();
+    }
+}
+ 
+interface Component{
+    void operation();
+}
+ 
+class CreateComponent implements Component{
+    @Override
+    public void operation() {
+        System.out.println("拍照");
+    }
+}
+ 
+//抽象类实现接口，可以不实现接口中的方法，当子类继承此抽象类时再对接口中的方法进行实现
+abstract class Decorator implements Component{
+    Component component;
+ 
+    public Decorator(Component component){
+        this.component = component;
+    }
+}
+ 
+//子类继承抽象父类，需要实现父类未实现的接口方法，需要调用父类的定义的构造函数
+class CreateDecoator1 extends Decorator{
+ 
+    //构造父类的构造方法
+    public CreateDecoator1(Component component) {
+        super(component);
+    }
+ 
+    @Override
+    public void operation() {
+        System.out.println("美颜");
+        //调用创建CreateDecoator1类时传递到父抽象类Decorator的component
+        component.operation();
+    }
+}
+ 
+class CreateDecorator2 extends Decorator{
+ 
+    public CreateDecorator2(Component component) {
+        super(component);
+    }
+ 
+    @Override
+    public void operation() {
+        System.out.println("滤镜");
+        component.operation();
+    }
+}
