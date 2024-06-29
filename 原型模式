@@ -1,0 +1,74 @@
+public class PrototypeTest {
+    public static void main(String[] args) throws CloneNotSupportedException {
+        BaseInfo baseInfo = new BaseInfo("1111");
+        Product product = new Product("xx商品","part1","part2","part3",baseInfo);
+        System.out.println(product.toString());
+        Product clone = product.clone();
+        System.out.println(clone.toString());
+    }
+ 
+}
+ 
+class BaseInfo implements Cloneable{
+    private String productId;
+ 
+    public BaseInfo(String productId){
+        this.productId = productId;
+    }
+ 
+    @Override
+    protected BaseInfo clone() throws CloneNotSupportedException{
+        BaseInfo baseInfo = (BaseInfo)super.clone();
+        return baseInfo;
+    }
+ 
+    @Override
+    public String toString() {
+        return super.hashCode()+" ] BaseInfo{" +
+                "productId='" + productId + '\'' +
+                '}';
+    }
+}
+ 
+class Product implements Cloneable{
+    private String productName;
+    private String part1;
+    private String part2;
+    private String part3;
+    private BaseInfo baseInfo;
+ 
+    @Override
+    protected Product clone() throws CloneNotSupportedException{
+        Product product = (Product)super.clone();
+        BaseInfo baseInfo = (BaseInfo)product.baseInfo.clone();
+        product.setBaseInfo(baseInfo);
+        return product;
+    }
+ 
+    public Product(String productName, String part1, String part2, String part3,BaseInfo baseInfo) {
+        this.productName = productName;
+        this.part1 = part1;
+        this.part2 = part2;
+        this.part3 = part3;
+        this.baseInfo = baseInfo;
+    }
+ 
+    @Override
+    public String toString() {
+        return super.hashCode()+"Product{" +
+                "productName='" + productName + '\'' +
+                ", part1='" + part1 + '\'' +
+                ", part2='" + part2 + '\'' +
+                ", part3='" + part3 + '\'' +
+                ", baseInfo=" + baseInfo +
+                '}';
+    }
+ 
+    public BaseInfo getBaseInfo() {
+        return baseInfo;
+    }
+ 
+    public void setBaseInfo(BaseInfo baseInfo) {
+        this.baseInfo = baseInfo;
+    }
+}
