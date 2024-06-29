@@ -1,0 +1,71 @@
+public class BridgeTest {
+    public static void main(String[] args) {
+        //创建实现化角色
+        Animal animal = new Cat();
+        //实现化角色，通过创建抽象子类时，注入进去；通过创建的子类进行桥接，使其可以调用到实现化角色
+        Behavior behavior = new SubBehavior1(animal);
+        behavior.wakeUp();
+        //也可以使用其他组合
+        behavior = new SubBehavior2(new Sheep());
+        behavior.wakeUp();
+    }
+}
+ 
+//定义接口-实现化角色
+interface Animal{
+    void operation();
+}
+ 
+//具体实现化角色
+class Cat implements Animal{
+    @Override
+    public void operation() {
+        System.out.println("小猫...");
+    }
+}
+ 
+//具体实现化角色
+class Sheep implements Animal{
+    @Override
+    public void operation() {
+        System.out.println("山羊");
+    }
+}
+ 
+//定义抽象化角色
+abstract class Behavior{
+    //注入实现化角色
+    Animal animal;
+ 
+    public Behavior(Animal animal) {
+        this.animal = animal;
+    }
+ 
+    abstract public void wakeUp();
+}
+ 
+//扩展抽象化角色--桥接
+class SubBehavior1 extends Behavior{
+    public SubBehavior1(Animal animal) {
+        super(animal);
+    }
+ 
+    @Override
+    public void wakeUp() {
+        System.out.println("扩展抽象化1调用：wakeUp");
+        animal.operation();
+    }
+}
+ 
+//扩展抽象化角色--桥接
+class SubBehavior2 extends Behavior{
+    public SubBehavior2(Animal animal) {
+        super(animal);
+    }
+ 
+    @Override
+    public void wakeUp() {
+        System.out.println("扩展抽象化2调用：wakeUp");
+        animal.operation();
+    }
+}
