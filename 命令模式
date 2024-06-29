@@ -1,0 +1,94 @@
+public class CommandTest {
+    public static void main(String[] args) {
+        //创建翻上一个视频的命令对象
+        Command upVideoCommand = new UpVideoCommand();
+        //创建关闭电视机的命令对象
+        Command closeVideoCommand = new CloseVideoCommand();
+        //创建调用者
+        ControllerInvoker controllerInvoker = new ControllerInvoker();
+        //把可以调用的命令设置到调用者中
+        controllerInvoker.setUpVideoCommand(upVideoCommand);
+        controllerInvoker.setCloseVideoCommand(closeVideoCommand);
+        //调用者调用方法-翻上一个视频
+        controllerInvoker.upVideo();
+        //调用者调用方法-关闭电视机
+        controllerInvoker.closeVideo();
+    }
+}
+ 
+//抽象命令类
+interface Command{
+    void execute();
+}
+ 
+//具体命令类-翻上一个视频操作
+class UpVideoCommand implements Command{
+    //注入此命令的接收者
+    private VideoTopReceiver videoTopReceiver;
+ 
+    public UpVideoCommand() {
+        videoTopReceiver = new VideoTopReceiver();
+    }
+ 
+    @Override
+    public void execute() {
+        System.out.println("按了翻上一个视频的按钮");
+        //给接收者发送命令
+        videoTopReceiver.upVideo();
+    }
+}
+ 
+//具体命令类-关闭电视机
+class CloseVideoCommand implements Command{
+    //注入此命令的接收者
+    private VideoReceiver videoReceiver;
+ 
+    public CloseVideoCommand() {
+        videoReceiver = new VideoReceiver();
+    }
+ 
+    @Override
+    public void execute() {
+        System.out.println("按了关机的按钮");
+        //给接收者发送命令
+        videoReceiver.closeVideo();
+    }
+}
+ 
+//命令实现者-电视机顶盒
+class VideoTopReceiver {
+    public void upVideo(){
+        System.out.println("收到命令，翻上一个台");
+    }
+}
+ 
+//命令实现者-电视机
+class VideoReceiver{
+    public void closeVideo(){
+        System.out.println("收到命令，电视机关机");
+    }
+}
+ 
+//调用者-遥控器，设置了可以调用的命令
+class ControllerInvoker{
+    //定义好有哪些命令可以调用
+    private Command upVideoCommand,closeVideoCommand;
+ 
+    public void setUpVideoCommand(Command upVideoCommand) {
+        this.upVideoCommand = upVideoCommand;
+    }
+ 
+    public void setCloseVideoCommand(Command closeVideoCommand) {
+        this.closeVideoCommand = closeVideoCommand;
+    }
+ 
+    //当按下调用上一个节目的按钮执行的方法
+    public void upVideo(){
+        upVideoCommand.execute();
+    }
+ 
+    //当按电视关机的按钮执行的方法
+    public void closeVideo(){
+        closeVideoCommand.execute();
+    }
+}
