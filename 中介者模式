@@ -1,0 +1,95 @@
+public class MediatorTest {
+    public static void main(String[] args) {
+        //创建中介者
+        Mediator mediator = new ConcreteMediator();
+        //创建同事类
+        Colleague concreteColleague1 = new ConcreteColleague1();
+        Colleague concreteColleague2 = new ConcreteColleague2();
+        //把同事类添加到中介者中
+        mediator.register(concreteColleague1);
+        mediator.register(concreteColleague2);
+        //同事类发送消息
+        concreteColleague1.send();
+        concreteColleague2.send();
+    }
+}
+ 
+//抽象中介者
+abstract class Mediator{
+    //同事类添加到中介者中
+    abstract void register(Colleague colleague);
+    //转发消息
+    abstract void relay(Colleague colleague);
+}
+ 
+//抽象同事类
+abstract class Colleague{
+    //记录此同事类关联的中介者
+    Mediator mediator;
+    //接收消息
+    abstract void receive();
+    //发送消息
+    abstract void send();
+ 
+    //设置此同事类关联的中介者
+    public void setMediator(Mediator mediator) {
+        this.mediator = mediator;
+    }
+}
+ 
+//具体中介者
+class ConcreteMediator extends Mediator{
+    //记录注册在此中介者中的同事集合
+    private List<Colleague> list = new ArrayList<Colleague>();
+ 
+    @Override
+    void register(Colleague colleague) {
+        if(!list.contains(colleague)){
+            //把同事类添加到它关联的中介者中
+            list.add(colleague);
+            //给此同事类设置它关联的中介者
+            colleague.setMediator(this);
+        }
+    }
+ 
+    @Override
+    void relay(Colleague c) {
+        for(Colleague colleague : list){
+            //转发的同事，不包含发消息的同事
+            if(!c.equals(colleague)){
+                colleague.receive();
+            }
+        }
+    }
+}
+ 
+//具体同事类
+class ConcreteColleague1 extends Colleague{
+ 
+    @Override
+    void receive() {
+        System.out.println("具体同事类1收到消息");
+    }
+ 
+    @Override
+    void send() {
+        System.out.println("具体同事类1发送消息");
+        //通过此同事类关联的中介者进行消息转发（不包含转发给自己）
+        mediator.relay(this);
+    }
+}
+ 
+//具体同事类
+class ConcreteColleague2 extends Colleague{
+ 
+    @Override
+    void receive() {
+        System.out.println("具体同事类2收到消息");
+    }
+ 
+    @Override
+    void send() {
+        System.out.println("具体同事类2发送消息");
+        //通过此同事类关联的中介者进行消息转发（不包含转发给自己）
+        mediator.relay(this);
+    }
