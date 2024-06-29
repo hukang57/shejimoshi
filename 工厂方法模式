@@ -1,0 +1,56 @@
+public class FactoryMethod {
+ 
+    public static void main(String[] args) {
+        //创建子类，使用继承的父类来接收
+        //Application application = new CreateProductA();
+        Application application = new CreateProductB();
+        //使用接口类来接收创建出来类，体现了多态
+        Product productObject = application.getProduct();
+        //创建的是哪个类，调用到的就是哪个类的方法实现
+        productObject.method();
+    }
+}
+ 
+//定义一个接口类
+interface Product{
+    public void method();
+}
+ 
+//类实现了接口，必须实现接口中的方法
+class ProductA implements Product{
+    @Override
+    public void method() {
+        System.out.println("ProductA method");
+    }
+}
+ 
+ 
+class ProductB implements Product{
+    @Override
+    public void method() {
+        System.out.println("ProductB method");
+    }
+}
+ 
+//抽象类里面不一定要有抽象方法；有抽象方法，类必须要是抽象类
+abstract class Application {
+    //工厂方法类，返回的是一个接口类
+    abstract Product getProduct();
+}
+ 
+//子类继承了抽象类，子类必须实现抽象类里的方法
+class CreateProductA extends Application{
+    @Override
+    Product getProduct() {
+        //ProductA实现了Product接口，所以可以把创建的ProductA用Product接收
+        return new ProductA();
+    }
+}
+ 
+//子类继承了抽象类，子类必须实现抽象类里的方法
+class CreateProductB extends Application{
+    @Override
+    Product getProduct() {
+        return new ProductB();
+    }
+}
