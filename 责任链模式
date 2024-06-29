@@ -1,0 +1,119 @@
+public class ChainOfResponsibilityTest {
+    public static void main(String[] args) {
+        //通过构建者模式创建request
+        Request request = new Request.RequestBuilder().isLogin(false).isEnter(false).bulid();
+        //定义责任链，LoginHandler的next为EnterHandler，EnterHandler的next为null
+        Handler handler = new LoginHandler(new EnterHandler(null));
+        boolean process = handler.process(request);
+        if(process){
+            System.out.println("校验通过");
+        } else {
+            System.out.println("校验不通过");
+        }
+    }
+}
+ 
+//定义一个请求类
+class Request {
+    private boolean isLogin;
+    private boolean isEnter;
+ 
+    public Request(boolean isLogin, boolean isEnter) {
+        this.isLogin = isLogin;
+        this.isEnter = isEnter;
+    }
+ 
+    //使用建造者模式创建
+    static class RequestBuilder{
+        private boolean isLogin;
+        private boolean isEnter;
+ 
+        RequestBuilder isLogin(boolean isLogin){
+            this.isLogin = isLogin;
+            return this;
+        }
+        
+        RequestBuilder isEnter(boolean isEnter){
+            this.isEnter = isEnter;
+            return this;
+        }
+        
+        Request bulid(){
+            Request request = new Request(isLogin,isEnter);
+            return request;
+        }
+    }
+ 
+    public boolean isLogin() {
+        return isLogin;
+    }
+ 
+    public boolean isEnter() {
+        return isEnter;
+    }
+}
+ 
+//定义一个抽象父类
+abstract class Handler{
+    Handler next;
+    abstract boolean process(Request request);
+ 
+    public Handler(Handler next) {
+        this.next = next;
+    }
+ 
+    public Handler getNext() {
+        return next;
+    }
+ 
+    public void setNext(Handler next) {
+        this.next = next;
+    }
+}
+ 
+//定义子类
+class LoginHandler extends Handler{
+ 
+    //定义next的值
+    public LoginHandler(Handler next) {
+        super(next);
+    }
+ 
+    @Override
+    boolean process(Request request) {
+        System.out.println("登陆校验");
+        if(request.isLogin()){
+            Handler next = getNext();
+            if(null == next){
+                return true;
+            }
+            if(next.process(request)){
+                return true;
+            }
+        }
+        return false;
+    }
+}
+ 
+//定义子类
+class EnterHandler extends Handler{
+ 
+    public EnterHandler(Handler next) {
+        super(next);
+    }
+ 
+    @Override
+    boolean process(Request request) {
+        System.out.println("进入处理");
+        if(request.isEnter()){
+            Handler next = getNext();
+            if(null == next){
+                return true;
+            }
+            if(next.process(request)){
+                return true;
+            }
+        }
+        return false;
+    }
+}
