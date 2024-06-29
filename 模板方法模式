@@ -1,0 +1,38 @@
+public class TemplateTest {
+ 
+    public static void main(String[] args) {
+        AbstraceClass abstraceClass = new SubClass2();
+        abstraceClass.operator();
+    }
+}
+ 
+/**
+ * 抽象父类
+ */
+abstract class AbstraceClass{
+    //一般此方法是默认调用的方法
+    public void operator(){
+        System.out.println("准备");
+        System.out.println("处理");
+        //调用模板方法，此方法由子类实现
+        templateMethod();
+    }
+ 
+    protected abstract void templateMethod();
+}
+ 
+class SubClass1 extends AbstraceClass{
+    //重写父类定义的抽象方法
+    @Override
+    protected void templateMethod() {
+        System.out.println("子类1实现的方法");
+    }
+}
+ 
+class SubClass2 extends AbstraceClass{
+    //重写父类定义的抽象方法
+    @Override
+    protected void templateMethod() {
+        System.out.println("子类2实现的方法");
+    }
+}
