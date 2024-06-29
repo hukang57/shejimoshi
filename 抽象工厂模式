@@ -1,0 +1,74 @@
+public class AbstractFactory {
+    public static void main(String[] args) {
+        //创建一个类，使用其实现的接口来接收
+        IDataBaseUtils iDataBaseUtils = new MysqlDataBaseUtils();
+        IConnection iConnection = iDataBaseUtils.getConnection();
+        iConnection.connection();
+        ICommand iCommand = iDataBaseUtils.getCommand();
+        iCommand.command();
+    }
+}
+ 
+interface IConnection{
+    void connection();
+}
+ 
+interface ICommand{
+    void command();
+}
+ 
+interface IDataBaseUtils{
+    //包含一组的工厂方法
+    IConnection getConnection();
+    ICommand getCommand();
+}
+ 
+class MysqlConnection implements IConnection{
+    @Override
+    public void connection() {
+        System.out.println("mysql connection");
+    }
+}
+ 
+class OracleConnection implements IConnection{
+    @Override
+    public void connection() {
+        System.out.println("oracle connection");
+    }
+}
+ 
+class MysqlCommand implements ICommand{
+    @Override
+    public void command() {
+        System.out.println("mysql command");
+    }
+}
+ 
+class OracleCommand implements ICommand{
+    @Override
+    public void command() {
+        System.out.println("oracle command");
+    }
+}
+ 
+class MysqlDataBaseUtils implements IDataBaseUtils{
+    @Override
+    public IConnection getConnection() {
+        return new MysqlConnection();
+    }
+    @Override
+    public ICommand getCommand() {
+        return new MysqlCommand();
+    }
+}
+ 
+class OracleDataBaseUtils implements IDataBaseUtils{
+    @Override
+    public IConnection getConnection() {
+        return new OracleConnection();
+    }
+    @Override
+    public ICommand getCommand() {
+        return new OracleCommand();
+    }
+}
